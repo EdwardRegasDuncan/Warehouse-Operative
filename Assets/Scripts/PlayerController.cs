@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 
+    public bool playerEnabled = true;
     float _speed = 5;
     float _rotateSpeed = 90;
     public float _pickupRange;
@@ -29,36 +30,37 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (playerEnabled) { 
+            float horrizontalMovement = Input.GetAxis("Horizontal");
+            float verticalMovement = Input.GetAxis("Vertical");
+            float rotation = Input.GetAxis("Rotate");
 
-        float horrizontalMovement = Input.GetAxis("Horizontal");
-        float verticalMovement = Input.GetAxis("Vertical");
-        float rotation = Input.GetAxis("Rotate");
+            directionOfMovement = new Vector3(horrizontalMovement, 0, verticalMovement) * _speed * Time.deltaTime;
+            transform.Translate(directionOfMovement);
+            _stack.transform.Rotate(new Vector3(0, rotation * _rotateSpeed * Time.deltaTime, 0));
 
-        directionOfMovement = new Vector3(horrizontalMovement, 0, verticalMovement) * _speed * Time.deltaTime;
-        transform.Translate(directionOfMovement);
-        _stack.transform.Rotate(new Vector3(0, rotation * _rotateSpeed * Time.deltaTime, 0));
-
-        GameObject closestPackage = null;
-        Collider[] objectsInRange = Physics.OverlapSphere(transform.position, _pickupRange);
-        foreach (Collider package in objectsInRange)
-        {
-            closestPackage = getClosestPackage(objectsInRange);
-        }
-        //closestPackage.GetComponent<Renderer>().material.shader = highlightShader;
-
-        if (Input.GetButtonDown("Jump"))
-        {
-            if (closestPackage)
+            GameObject closestPackage = null;
+            Collider[] objectsInRange = Physics.OverlapSphere(transform.position, _pickupRange);
+            foreach (Collider package in objectsInRange)
             {
-                Debug.Log(closestPackage.name + " Is the closest");
-                Debug.Log("Adding {0} to stack", closestPackage);
-                addClosestPackageToStack(closestPackage);
+                closestPackage = getClosestPackage(objectsInRange);
             }
-            else
+            //closestPackage.GetComponent<Renderer>().material.shader = highlightShader;
+
+            if (Input.GetButtonDown("Jump"))
             {
-                dropPackageFromStack();
+                if (closestPackage)
+                {
+                    Debug.Log(closestPackage.name + " Is the closest");
+                    Debug.Log("Adding {0} to stack", closestPackage);
+                    addClosestPackageToStack(closestPackage);
+                }
+                else
+                {
+                    dropPackageFromStack();
+                }
+
             }
-            
         }
 
 
@@ -144,5 +146,10 @@ public class PlayerController : MonoBehaviour
     {
         //Flash stack red and pop up a warning for player
         Debug.Log("Failed to add {0} to stack: Stack Limit Reached", package);
+    }
+
+    public void setPlayerStatus(bool status)
+    {
+        playerEnabled = status;
     }
 }

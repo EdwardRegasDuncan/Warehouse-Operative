@@ -10,6 +10,8 @@ public class GoalDetector : MonoBehaviour
     public List<GameObject> Packages;
     public int _score;
     public int _goal = 4;
+    public GameObject winconditionObject;
+    public GameObject playercontrollerObject;
 
     public Material _matt;
 
@@ -26,6 +28,8 @@ public class GoalDetector : MonoBehaviour
         if(_score == 4)
         {
             transform.GetChild(0).GetComponent<Renderer>().material = _matt;
+            winconditionObject.GetComponent<WinCondition>().setWinCondition(true);
+            playercontrollerObject.GetComponent<PlayerController>().setPlayerStatus(false);
         }
     }
 
@@ -41,10 +45,5 @@ public class GoalDetector : MonoBehaviour
                 }
             }
         }
-    }
-
-    void scanForPackages()
-    {
-
     }
 }
